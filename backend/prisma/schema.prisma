@@ -1,0 +1,179 @@
+// ICT Support System - Release 1 schema (PostgreSQL)
+// Written for Prisma 6:  npm i prisma@6 @prisma/client@6
+// Departments and ticket categories are NOT tables: they are lists in
+// src/lib/constants.js and are stored as plain text.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ---------- Enums ----------
+
+// Signup always creates STAFF. Only an ADMIN can promote a user to ADMIN,
+// and only users in the ICT department can be promoted.
+enum Role {
+  STAFF
+  ADMIN
+}
+
+enum Priority {
+  HIGH
+  MEDIUM // shown as "Normal" in the interface
+  LOW
+}
+
+enum TicketStatus {
+  NEW
+  ASSIGNED
+  IN_PROGRESS
+  PENDING
+  RESOLVED
+  CLOSED
+  REOPENED
+}
+
+enum TicketEventType {
+  CREATED
+  STATUS_CHANGED
+  PRIORITY_CHANGED
+  ASSIGNED
+}
+
+// ---------- Users ----------
+
+model User {
+  id           String   @id @default(cuid())
+  name         String
+  email        String   @unique // always stored in lowercase
+  passwordHash String
+  role         Role     @default(STAFF)
+  department   String // one of DEPARTMENTS in src/lib/constants.js
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  ticketsRequested Ticket[]      @relation("Requester")
+  ticketsAssigned  Ticket[]      @relation("Assignee")
+  comments         Comment[]
+  events           TicketEvent[]
+  attachments      Attachment[]
+  articles         KbArticle[]
+
+  @@index([role])
+  @@index([department])
+}
+
+// SLA target per priority, in minutes. Seeded by prisma/seed.js:
+//   HIGH 180 (3 hours), MEDIUM 360 (6 hours), LOW 2880 (2 days)
+model SlaPolicy {
+  priority          Priority @id
+  resolutionMinutes Int
+  updatedAt         DateTime @updatedAt
+}
+
+// ---------- Tickets ----------
+
+model Ticket {
+  id          String       @id @default(cuid())
+  number      Int          @unique @default(autoincrement()) // shown as e.g. TKT-0001
+  summary     String // one-line summary (shown in the queue)
+  description String // full details
+  category    String // one of CATEGORIES in src/lib/constants.js
+  status      TicketStatus @default(NEW)
+
+  // Set by an ADMIN when they triage / assign. Null = "Not triaged".
+  priority           Priority?
+  priorityAssignedAt DateTime? // SLA clock starts here
+  slaDueAt           DateTime? // priorityAssignedAt + SlaPolicy.resolutionMinutes
+
+  resolvedAt DateTime? // clear this when a ticket is reopened
+  closedAt   DateTime?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  // The requester is taken from the login token, never from the form.
+  requesterId String
+  requester   User   @relation("Requester", fields: [requesterId], references: [id])
+  assigneeId  String?
+  assignee    User?  @relation("Assignee", fields: [assigneeId], references: [id])
+
+  comments    Comment[]
+  events      TicketEvent[]
+  attachments Attachment[]
+
+  @@index([status, priority])
+  @@index([requesterId])
+  @@index([assigneeId])
+  @@index([slaDueAt])
+  @@index([createdAt])
+}
+
+// Files are stored in PostgreSQL (Render's disk is wiped on redeploy).
+// Always use `select` so ticket lists never load the `data` column.
+model Attachment {
+  id        String   @id @default(cuid())
+  fileName  String
+  mimeType  String
+  sizeBytes Int
+  data      Bytes
+  createdAt DateTime @default(now())
+
+  ticketId     String
+  ticket       Ticket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  uploadedById String
+  uploadedBy   User   @relation(fields: [uploadedById], references: [id])
+
+  @@index([ticketId])
+}
+
+model Comment {
+  id         String   @id @default(cuid())
+  body       String
+  isInternal Boolean  @default(false) // true = visible to ICT only
+  createdAt  DateTime @default(now())
+
+  ticketId String
+  ticket   Ticket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  authorId String
+  author   User   @relation(fields: [authorId], references: [id])
+
+  @@index([ticketId])
+}
+
+// Simple history: who changed what and when (the start of the audit trail).
+model TicketEvent {
+  id        String          @id @default(cuid())
+  type      TicketEventType
+  oldValue  String?
+  newValue  String?
+  createdAt DateTime        @default(now())
+
+  ticketId String
+  ticket   Ticket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  actorId  String
+  actor    User   @relation(fields: [actorId], references: [id])
+
+  @@index([ticketId])
+}
+
+// ---------- Knowledge base ----------
+
+// Only admins can create, edit or delete articles. Everyone logged in can read them.
+// The description is plain text; admins can use simple Markdown (headings, numbered steps, lists).
+model KbArticle {
+  id          String   @id @default(cuid())
+  title       String
+  description String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  authorId String
+  author   User   @relation(fields: [authorId], references: [id])
+
+  @@index([updatedAt])
+}
