@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken';
-import { env } from '../config/env'
+import { env } from '../config/env.js'
 
 export const COOKIE_NAME ='ict_token';
 const EIGHT_HOURS_MS = 8*60*60*1000;

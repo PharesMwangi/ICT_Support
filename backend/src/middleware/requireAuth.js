@@ -1,6 +1,6 @@
-import { prisma } from "../lib/prisma";
-import { HttpError } from "../lib/HttpError";
-import { COOKIE_NAME, verifyToken } from "../lib/token";
+import { prisma } from "../lib/prisma.js";
+import { HttpError } from "../lib/HttpError.js";
+import { COOKIE_NAME, verifyToken } from "../lib/token.js";
 
 export async function requireAuth(req, res, next){
     const token = req.cookies?.[COOKIE_NAME];

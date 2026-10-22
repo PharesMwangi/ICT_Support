@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { DEPARTMENTS } from '../lib/constants';
+import { DEPARTMENTS } from '../lib/constants.js';
 
 export const passwordSchema = z
 .string()

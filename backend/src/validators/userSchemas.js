@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { DEPARTMENTS, ROLES } from '../lib/constants';
+import { DEPARTMENTS, ROLES } from '../lib/constants.js';
 
 export const listUsersQuery = z.object({
     department: z.enum(DEPARTMENTS).optional(),

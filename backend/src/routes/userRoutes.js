@@ -1,11 +1,11 @@
 //for admins
 import { Router } from "express";
-import { validate } from "../middleware/validate";
-import { requireRole } from "../middleware/requireRole";
-import { requireAuth } from "../middleware/requireAuth";
-import { idParams } from "../validators/commonSchemas";
-import { setActiveSchema, setRoleSchema } from "../validators/userSchemas";
-import { listUsers, setActive, setRole } from "../controllers/userController";
+import { validate } from "../middleware/validate.js";
+import { requireRole } from "../middleware/requireRole.js";
+import { requireAuth } from "../middleware/requireAuth.js";
+import { idParams } from "../validators/commonSchemas.js";
+import { setActiveSchema, setRoleSchema } from "../validators/userSchemas.js";
+import { listUsers, setActive, setRole } from "../controllers/userController.js";
 
 const router = Router();
 

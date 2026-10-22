@@ -1,5 +1,5 @@
 import { Schema } from "zod/v3";
-import { HttpError } from "../lib/HttpError";
+import { HttpError } from "../lib/HttpError.js";
 
 // checks req.body and replaces it with cleaned data
 export const validate = (schema, source = 'body') => (req, res, next) =>{

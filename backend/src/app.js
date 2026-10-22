@@ -5,11 +5,11 @@ import cookieParser from 'cookie-parser';
 import morgan from 'morgan';
 import rateLimit from 'express-rate-limit';
 
-import { env } from './config/env';
-import { notFound } from './middleware/notFound';
-import { errorHandler } from './middleware/errorHandler';
-import authRoutes from './routes/authRoutes';
-import userRoutes from './routes/userRoutes';
+import { env } from './config/env.js';
+import { notFound } from './middleware/notFound.js';
+import { errorHandler } from './middleware/errorHandler.js';
+import authRoutes from './routes/authRoutes.js';
+import userRoutes from './routes/userRoutes.js';
 
 export const app = express();
 

@@ -1,7 +1,7 @@
-import {prisma} from '../lib/prisma';
-import {HttpError} from '../lib/HttpError';
-import { ADMIN_DEPARTMENT } from '../lib/constants';
-import {listUsersQuery} from '../validators/user.schemas.js';
+import {prisma} from '../lib/prisma.js';
+import {HttpError} from '../lib/HttpError.js';
+import { ADMIN_DEPARTMENT } from '../lib/constants.js';
+import {listUsersQuery} from '../validators/userSchemas.js';
 import { email } from 'zod';
 
 const adminSelect = {

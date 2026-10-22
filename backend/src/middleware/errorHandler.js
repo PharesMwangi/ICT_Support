@@ -1,4 +1,4 @@
-import { HttpError } from "../lib/HttpError";
+import { HttpError } from "../lib/HttpError.js";
 
 // Every error ends up here and is sent as: { error: { message, details? } }
 export function errorHandler(err, req, res, next){

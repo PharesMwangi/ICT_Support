@@ -4,9 +4,9 @@
 
 import 'dotenv/config';
 import { Prisma } from '../src/lib/prisma';
-import { hashPassword } from '../src/lib/password';
-import { ADMIN_DEPARTMENT } from '../src/lib/constants';
-import { passwordSchema } from '../src/validators/authSchemas';
+import { hashPassword } from '../src/lib/password.js';
+import { ADMIN_DEPARTMENT } from '../src/lib/constants.js';
+import { passwordSchema } from '../src/validators/authSchemas.js';
 
 const SLA_MINUTES = { HIGH: 3 * 60, MEDIUM: 6 * 60, LOW: 2 * 24 * 60 };
 
