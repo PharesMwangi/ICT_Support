@@ -20,7 +20,7 @@ export async function loadSlaMinutes(db){
     return minutes;
 }
 
-//Returns status, remainingMs.
+//Returns - status, remainingMs.
 
  export function getSlaStatus(ticket, now = new Date()){
     const {priority, priorityAssignedAt, slaDueAt, resolvedAt} = ticket;
