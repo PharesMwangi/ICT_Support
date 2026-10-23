@@ -3,7 +3,7 @@
 // 2. Creates the first ADMIN from ADMIN_NAME / ADMIN_EMAIL / ADMIN_PASSWORD in .env.
 
 import 'dotenv/config';
-import { Prisma } from '../src/lib/prisma';
+import { prisma } from '../src/lib/prisma.js';
 import { hashPassword } from '../src/lib/password.js';
 import { ADMIN_DEPARTMENT } from '../src/lib/constants.js';
 import { passwordSchema } from '../src/validators/authSchemas.js';
