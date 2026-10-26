@@ -10,6 +10,10 @@ import { notFound } from './middleware/notFound.js';
 import { errorHandler } from './middleware/errorHandler.js';
 import authRoutes from './routes/authRoutes.js';
 import userRoutes from './routes/userRoutes.js';
+import metaRoutes from './routes/metaRoutes.js';
+import kbRoutes from './routes/kbRoutes.js';
+import ticketRoutes from './routes/ticketRoutes.js';
+import reportRoutes from './routes/reportRoutes.js'
 
 export const app = express();
 
@@ -32,8 +36,12 @@ const authLimiter = rateLimit({
 });
 
 app.get('/api/health', (req, res) => res.join({status: 'ok' }));
+app.use('/api/meta', metaRoutes);
 app.use('/api/auth', authLimiter, authRoutes);
 app.use('/api/users', userRoutes);
+app.use('/api/kb', kbRoutes);
+app.use('/api/tickets', ticketRoutes);
+app.use('/api/reports', reportRoutes);
 
 app.use(notFound);
 app.use(errorHandler);
