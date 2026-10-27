@@ -1,14 +1,14 @@
 import { Router } from "express";
-import { validate } from "../middleware/validate";
-import { requireAuth } from "../middleware/requireAuth";
-import { requireRole } from "../middleware/requireRole";
-import { idParams } from "../validators/commonSchemas";
-import { createArticleSchema, updateArticleSchema } from "../validators/kbSchema";
+import { validate } from "../middleware/validate.js";
+import { requireAuth } from "../middleware/requireAuth.js";
+import { requireRole } from "../middleware/requireRole.js";
+import { idParams } from "../validators/commonSchemas.js";
+import { createArticleSchema, updateArticleSchema } from "../validators/kbSchema.js";
 import { createArticle, 
     deleteArticle, 
     getArticle, 
     listArticles, 
-    updateArticle } from "../controllers/kbController";
+    updateArticle } from "../controllers/kbController.js";
 
 const router = Router();
 

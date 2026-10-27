@@ -1,4 +1,5 @@
 import { prisma } from "../lib/prisma.js";
+import jwt from 'jsonwebtoken';
 import {HttpError } from "../lib/HttpError.js";
 import { DUMMY_HASH, hashPassword, verifyPassword } from '../lib/password.js';
 import { COOKIE_NAME, cookieOptions, loginCookieOptions, signToken } from '../lib/token.js';
@@ -35,7 +36,7 @@ export async function signup(req, res){
 export async function login(req, res){
     const {email, password } = req.body;
 
-    const user = await prismer.user.findUnique({where: {email} });
+    const user = await prisma.user.findUnique({where: {email} });
 
     const passwordOk = await verifyPassword(password, user?.passwordHash ?? DUMMY_HASH);
     if( !user || !passwordOk) throw new HttpError(401, 'Invalid email or password');

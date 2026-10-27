@@ -1,6 +1,6 @@
-import { prisma } from "../lib/prisma";
-import { HttpError } from "../lib/HttpError";
-import { listKbQuery } from "../validators/kbSchema";
+import { prisma } from "../lib/prisma.js";
+import { HttpError } from "../lib/HttpError.js";
+import { listKbQuery } from "../validators/kbSchema.js";
 
 const articleSelect = {
     id: true,
