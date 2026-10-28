@@ -165,24 +165,29 @@ export async function getTicket(req, res) {
 async function runUpdate(id, body, user) {
   const admin = isAdminUser(user);
 
+  // 1. Gather all required data OUTSIDE the transaction block safely
+  const ticket = await prisma.ticket.findUnique({ where: { id }, select: ruleSelect });
+  if (!ticket || (!admin && ticket.requesterId !== user.id)) throw new HttpError(404, 'Ticket not found');
+
+  const assignee = body.assigneeId
+    ? await prisma.user.findUnique({
+        where: { id: body.assigneeId },
+        select: { id: true, name: true, role: true, isActive: true },
+      })
+    : null;
+
+  // Moving this outside saves massive transaction lifecycle time
+  const slaMinutes = await loadSlaMinutes(prisma); 
+  
+  // Calculate updates in memory (CPU intensive, not DB intensive)
+  const { data, events } = buildTicketUpdate(ticket, body, { assignee, slaMinutes, now: new Date() });
+
+  if (events.length === 0) {
+    return prisma.ticket.findUnique({ where: { id }, select: detailSelect(admin) });
+  }
+
+  // 2. Open the transaction ONLY for the fast write operations
   return prisma.$transaction(async (tx) => {
-    const ticket = await tx.ticket.findUnique({ where: { id }, select: ruleSelect });
-    if (!ticket || (!admin && ticket.requesterId !== user.id)) throw new HttpError(404, 'Ticket not found');
-
-    const assignee = body.assigneeId
-      ? await tx.user.findUnique({
-          where: { id: body.assigneeId },
-          select: { id: true, name: true, role: true, isActive: true },
-        })
-      : null;
-
-    const slaMinutes = await loadSlaMinutes(tx);
-    const { data, events } = buildTicketUpdate(ticket, body, { assignee, slaMinutes, now: new Date() });
-
-    if (events.length === 0) {
-      return tx.ticket.findUnique({ where: { id }, select: detailSelect(admin) });
-    }
-
     return tx.ticket.update({
       where: { id },
       data: { ...data, events: { create: events.map((e) => ({ ...e, actorId: user.id })) } },
@@ -190,6 +195,7 @@ async function runUpdate(id, body, user) {
     });
   });
 }
+
 
 // ---- PATCH /api/tickets/:id  admins only ----
 // body: { priority?, assigneeId?, status? }

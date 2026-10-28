@@ -11,7 +11,7 @@ const MAX_RANGE_DAYS = 366;
 const MAX_CSV_ROWS = 5000;
 
 // Dates are treated as UTC days. Default range: the last 30 days.
-function parse(query){
+function parseRange(query){
     const q = reportQuery.parse(query);
     const now = new Date();
 
