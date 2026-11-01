@@ -1,0 +1,233 @@
+/* Ticket detail: the chit */
+.chit {
+  position: relative;
+  display: grid;
+  grid-template-columns: 11rem minmax(0, 1fr);
+  background: var(--surface);
+  border: 1px solid var(--rule-strong);
+  border-radius: var(--r-md);
+  overflow: hidden;
+}
+.chit__stub {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 1.25rem 1rem;
+  background: var(--blue-tint);
+  border-right: 2px dashed var(--rule-strong);
+}
+.chit__stub::before,
+.chit__stub::after {
+  content: '';
+  position: absolute;
+  right: -0.7rem;
+  width: 1.4rem;
+  height: 1.4rem;
+  border-radius: 50%;
+  background: var(--paper);
+  border: 1px solid var(--rule-strong);
+}
+.chit__stub::before {
+  top: -0.7rem;
+}
+.chit__stub::after {
+  bottom: -0.7rem;
+}
+.chit__label {
+  font-size: 0.9rem;
+  color: var(--ink-2);
+}
+.chit__number {
+  font-family: var(--font-display);
+  font-size: 3.2rem;
+  font-weight: 700;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+}
+.chit__body {
+  padding: 1.25rem 1.5rem;
+}
+.chit__summary {
+  font-size: 1.9rem;
+  margin-bottom: 0.6rem;
+  overflow-wrap: anywhere;
+}
+.chit__badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  align-items: center;
+}
+
+.facts {
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr);
+  gap: 0.4rem 1.25rem;
+  margin: 0;
+}
+.facts dt {
+  color: var(--muted);
+}
+.facts dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.description {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  max-width: 46rem;
+}
+
+.attachments {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+.attachments li {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  max-width: 11rem;
+  font-size: 0.92rem;
+  overflow-wrap: anywhere;
+}
+.attachments img {
+  display: block;
+  width: 11rem;
+  height: 7rem;
+  object-fit: cover;
+  background: var(--neutral-tint);
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+}
+
+/* Activity stream */
+.activity {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.activity__item {
+  position: relative;
+  padding: 0 0 1.1rem 1.4rem;
+  border-left: 2px solid var(--rule);
+  margin-left: 0.4rem;
+}
+.activity__item::before {
+  content: '';
+  position: absolute;
+  left: -0.4rem;
+  top: 0.45rem;
+  width: 0.7rem;
+  height: 0.7rem;
+  border-radius: 50%;
+  background: var(--rule-strong);
+}
+.activity__item--comment::before {
+  background: var(--blue);
+}
+.activity__item--internal::before {
+  background: var(--normal);
+}
+.activity__head {
+  color: var(--muted);
+  font-size: 0.92rem;
+}
+.activity__head strong {
+  color: var(--ink);
+}
+.activity__text {
+  margin: 0.2rem 0 0;
+}
+.activity__comment {
+  margin: 0.35rem 0 0;
+  padding: 0.65rem 0.85rem;
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.activity__item--internal .activity__comment {
+  background: var(--normal-tint);
+  border-color: #e4c98f;
+}
+
+.divider-title {
+  margin-bottom: 0.9rem;
+}
+
+.upload-note {
+  margin: 0.3rem 0 0;
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+.file-list {
+  margin: 0.5rem 0 0;
+  padding-left: 1.2rem;
+  font-size: 0.92rem;
+}
+
+.sla-bar {
+  height: 0.9rem;
+  margin: 0.5rem 0;
+  background: var(--neutral-tint);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.sla-bar__fill {
+  height: 100%;
+  background: var(--low);
+}
+
+@media (max-width: 40rem) {
+  .chit {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .chit__stub {
+    border-right: 0;
+    border-bottom: 2px dashed var(--rule-strong);
+    flex-direction: row;
+    align-items: baseline;
+    gap: 0.6rem;
+    padding: 0.8rem 1rem;
+  }
+  .chit__stub::before,
+  .chit__stub::after {
+    right: auto;
+    top: auto;
+    bottom: -0.7rem;
+  }
+  .chit__stub::before {
+    left: -0.7rem;
+  }
+  .chit__stub::after {
+    right: -0.7rem;
+  }
+  .chit__number {
+    font-size: 2.4rem;
+  }
+  .queue__link {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.4rem;
+  }
+  .queue__side {
+    align-items: flex-start;
+  }
+  .queue__badges {
+    justify-content: flex-start;
+  }
+  .bars li {
+    grid-template-columns: 6.5rem minmax(0, 1fr) 2.5rem;
+  }
+  .board__item {
+    border-right: 0;
+    border-bottom: 1px solid var(--rule);
+  }
+}
