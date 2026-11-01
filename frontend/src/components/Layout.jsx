@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import {Link, navLink, Outlet, useLocation} from "react-router-dom";
+import {Link, NavLink, Outlet, useLocation} from "react-router-dom";
 import { useAuth } from "../auth/AuthContext.jsx"; 
 import {roleLabel} from "../lib/labels.js";
 import {Alert} from "./ui.jsx";

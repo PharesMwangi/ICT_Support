@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { priorityBadge, SlaStatus, StatusBadge } from "./Badges.jsx";
+import { PriorityBadge, SlaStatus, StatusBadge} from "./Badges.jsx";
 import {ticketNumber} from "../lib/labels.js";
 import { formatDate } from "../lib/format.js";
 import { useNow } from "../hooks/useNow.js";
@@ -9,7 +9,7 @@ export default function TicketQueue({tickets, showRequester, fetchedAt}){
     const now = useNow();
     const elapsed = fetchedAt ? Math.max(0, now - fetchedAt) : 0;
     return(
-        <ul classname="queue">
+        <ul className="queue">
             {tickets.map((t) =>(
                 <li key={t.id} className={`queue__item queue__item--${t.priority ? t.priority.toLowerCase() : 'none'}`}>
                     <Link className="queue__link" to={`/tickets/${t.id}`}>

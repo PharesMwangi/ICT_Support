@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useNavigate, useLocation } from 'react-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext.jsx';
 import { Alert, Field } from '../components/ui.jsx';
 import { SessionEndedNotice } from '../components/Layout.jsx';

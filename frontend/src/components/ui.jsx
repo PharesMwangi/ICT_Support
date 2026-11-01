@@ -1,6 +1,6 @@
 import {useId} from 'react';
 
-export function spinner({label = 'Loading'}) {
+export function Spinner({label = 'Loading'}) {
     return (
     <div className="loading" role="status">
       <span className="spinner" aria-hidden="true" />
