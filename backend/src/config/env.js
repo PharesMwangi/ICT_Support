@@ -6,7 +6,7 @@ const schema = z.object({
   PORT: z.coerce.number().int().positive().default(4000),
   DATABASE_URL: z.string().min(1, 'DATABASE_URL is required'),
   JWT_SECRET: z.string().min(32, 'JWT_SECRET must be at least 32 characters'),
-  CLIENT_URL: z.string().min(1).default('http://localhost:5173'),
+  CLIENT_URL: z.string().min(1).default('http://10.10.50.69:5173'),
   COOKIE_SAMESITE: z.enum(['lax', 'strict', 'none']).default('lax'),
 });
 
