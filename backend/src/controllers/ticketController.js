@@ -165,7 +165,7 @@ export async function getTicket(req, res) {
 async function runUpdate(id, body, user) {
   const admin = isAdminUser(user);
 
-  // 1. Gather all required data OUTSIDE the transaction block safely
+  // 1. Gather all required data outside the transaction block safely
   const ticket = await prisma.ticket.findUnique({ where: { id }, select: ruleSelect });
   if (!ticket || (!admin && ticket.requesterId !== user.id)) throw new HttpError(404, 'Ticket not found');
 
@@ -191,8 +191,14 @@ async function runUpdate(id, body, user) {
     return tx.ticket.update({
       where: { id },
       data: { ...data, events: { create: events.map((e) => ({ ...e, actorId: user.id })) } },
-      select: detailSelect(admin),
+      select: { id: true }
     });
+  });
+
+  // 3. Fetch the heavy details independently AFTER the transaction is safely closed
+  return prisma.ticket.findUnique({
+    where: { id },
+    select: detailSelect(admin),
   });
 }
 
