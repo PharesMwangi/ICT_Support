@@ -4,7 +4,7 @@ import { api } from '../api/endpoints.js';
 import { useAsync } from '../hooks/useAsync.js';
 import { useDocumentTitle } from '../hooks/useDocumentTitle.js';
 import { useNotifications } from '../notifications/NotificationContext.jsx';
-import { alert, pageHeader, Spinner } from '../components/ui.jsx';
+import { Alert, PageHeader, Spinner } from '../components/ui.jsx';
 import EmptyState from '../components/EmptyState.jsx';
 import Pagination from '../components/Pagination.jsx';
 import { formatDateTime } from '../lib/format.js';

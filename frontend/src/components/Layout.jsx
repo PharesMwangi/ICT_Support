@@ -3,11 +3,13 @@ import {Link, NavLink, Outlet, useLocation} from "react-router-dom";
 import { useAuth } from "../auth/AuthContext.jsx"; 
 import {roleLabel} from "../lib/labels.js";
 import {Alert} from "./ui.jsx";
+import { NotificationsProvider, useNotifications } from '../notifications/NotificationContext.jsx';
 
 const STAFF_NAV = [
   { to: '/', label: 'Dashboard', end: true },
   { to: '/tickets', label: 'My tickets' },
   { to: '/kb', label: 'Knowledge base' },
+  { to: '/notifications', label: 'Notifications', bell: true },
 ];
 const ADMIN_NAV = [
   { to: '/', label: 'Dashboard', end: true },
@@ -15,7 +17,22 @@ const ADMIN_NAV = [
   { to: '/kb', label: 'Knowledge base' },
   { to: '/users', label: 'Users' },
   { to: '/reports', label: 'Reports' },
+  { to: '/notifications', label: 'Notifications', bell: true },
 ];
+
+function NavItems({ items }) {
+  const { count } = useNotifications();
+  return items.map((item) => (
+    <NavLink key={item.to} to={item.to} end={item.end} className="nav__link">
+      {item.label}
+      {item.bell && count > 0 && (
+        <span className="nav__badge" aria-label={`, ${count} unread`}>
+          {count > 99 ? '99+' : count}
+        </span>
+      )}
+    </NavLink>
+  ));
+}
 
 export default function Layout() {
   const { user, isAdmin, logout } = useAuth();
@@ -26,6 +43,7 @@ export default function Layout() {
   useEffect(() => setOpen(false), [location.pathname]);
 
   return (
+      <NotificationsProvider>
       <div className="app">
         <a className="skip-link" href="#main">
           Skip to main content
@@ -48,11 +66,7 @@ export default function Layout() {
           </div>
           <div className="sidebar__panel" id="sidebar-panel" data-open={open}>
             <nav className="nav" aria-label="Main">
-              {(isAdmin ? ADMIN_NAV : STAFF_NAV).map((item) => (
-                <NavLink key={item.to} to={item.to} end={item.end} className="nav__link">
-                  {item.label}
-                </NavLink>
-              ))}
+              <NavItems items={isAdmin ? ADMIN_NAV : STAFF_NAV} />
               {!isAdmin && (
                 <Link className="btn nav__action" to="/tickets/new">
                   New ticket
@@ -74,7 +88,8 @@ export default function Layout() {
           <Outlet />
         </main>
       </div>
-  );
+      </NotificationsProvider>
+    );
 
 }
 
