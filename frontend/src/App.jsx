@@ -12,6 +12,7 @@ import KbArticle from './pages/KbArticle.jsx';
 import KbEditor from './pages/KbEditor.jsx';
 import Users from './pages/Users.jsx';
 import Reports from './pages/Reports.jsx';
+import Notifications from './pages/Notifications.jsx';
 import NotFound from './pages/NotFound.jsx';
 
 export default function App() {
@@ -28,6 +29,7 @@ export default function App() {
           <Route path="tickets" element={<Tickets />} />
           <Route path="tickets/new" element={<NewTicket />} />
           <Route path="tickets/:id" element={<TicketDetail />} />
+          <Route path="notifications" element={<Notifications />} />
           <Route path="kb" element={<KbList />} />
           <Route path="kb/:id" element={<KbArticle />} />
           <Route element={<RequireAdmin />}>
