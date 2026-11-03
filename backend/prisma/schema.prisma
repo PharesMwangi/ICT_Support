@@ -177,3 +177,23 @@ model KbArticle {
 
   @@index([updatedAt])
 }
+
+// ---------- Notifications ----------
+
+// In-app notifications (the bell in the sidebar). One row per person per event.
+// Old rows are deleted automatically (see src/lib/notificationCleanup.js).
+model Notification {
+  id        String   @id @default(cuid())
+  type      String // TICKET_CREATED | ASSIGNED_TO_YOU | TICKET_UPDATED | TICKET_REOPENED | COMMENT | NOTE
+  message   String
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  userId   String
+  user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  ticketId String
+  ticket   Ticket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+
+  @@index([userId, isRead, createdAt])
+  @@index([createdAt])
+}
