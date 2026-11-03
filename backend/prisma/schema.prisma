@@ -63,6 +63,7 @@ model User {
   events           TicketEvent[]
   attachments      Attachment[]
   articles         KbArticle[]
+  notifications    Notification[]
 
   @@index([role])
   @@index([department])
@@ -102,9 +103,10 @@ model Ticket {
   assigneeId  String?
   assignee    User?  @relation("Assignee", fields: [assigneeId], references: [id])
 
-  comments    Comment[]
-  events      TicketEvent[]
-  attachments Attachment[]
+  comments      Comment[]
+  events        TicketEvent[]
+  attachments   Attachment[]
+  notifications Notification[]
 
   @@index([status, priority])
   @@index([requesterId])
