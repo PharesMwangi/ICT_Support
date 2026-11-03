@@ -27,6 +27,11 @@ export const api = {
   updateArticle: (id, data) => request(`/kb/${id}`, { method: 'PATCH', body: data }),
   deleteArticle: (id) => request(`/kb/${id}`, { method: 'DELETE' }),
 
+  notifications: (query) => request('/notifications', { query}),
+  unreadCount: () => request('/notifications/unread-count'),
+  markRead: (id) => request(`notifications/${id}/read`, {method: 'POST'}),
+  markAllRead: () => request('/notifications/read-all', {method: 'POST'}),
+
   summary: (query) => request('/reports/summary', { query }),
   csvUrl: (query) => {
     const params = new URLSearchParams();
