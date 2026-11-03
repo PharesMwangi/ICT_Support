@@ -1,10 +1,13 @@
 import { app } from './app.js'
 import { env } from "./config/env.js";
 import { prisma } from "./lib/prisma.js";
+import { startNotificationCleanup } from './lib/notificationCleanup.js';
 
 const server = app.listen(env.PORT, () =>{
     console.log(`ICT Support API running on port ${env.PORT} (${env.NODE_ENV})`);
 });
+
+startNotificationCleanup();
 
 // Render sends SIGTERM when it restarts or redeploys the service.
 async function shutdown(){

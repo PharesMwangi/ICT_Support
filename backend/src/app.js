@@ -13,7 +13,8 @@ import userRoutes from './routes/userRoutes.js';
 import metaRoutes from './routes/metaRoutes.js';
 import kbRoutes from './routes/kbRoutes.js';
 import ticketRoutes from './routes/ticketRoutes.js';
-import reportRoutes from './routes/reportRoutes.js'
+import reportRoutes from './routes/reportRoutes.js';
+import  notificationRoutes from './routes/notificationRoutes.js';
 
 export const app = express();
 
@@ -42,6 +43,7 @@ app.use('/api/users', userRoutes);
 app.use('/api/kb', kbRoutes);
 app.use('/api/tickets', ticketRoutes);
 app.use('/api/reports', reportRoutes);
+app.use('/api/notifications', notificationRoutes);
 
 app.use(notFound);
 app.use(errorHandler);
