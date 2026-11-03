@@ -1,13 +1,13 @@
 :root {
   /* Colour */
-  --ink: #14253d;
+  --ink: #4b8eeb;
   --ink-2: #3b4d66;
   --muted: #5b6b80;
   --paper: #eef2f6;
   --surface: #ffffff;
   --rule: #d9e0e8;
   --rule-strong: #b7c2cf;
-  --blue: #2e74b5; /* buttons and accents */
+  --blue: #95bff7; /* buttons and accents */
   --blue-dark: #235a8e; /* link text, hover */
   --blue-tint: #e3eef8;
   --high: #b42318;

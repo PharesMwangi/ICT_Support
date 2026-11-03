@@ -551,3 +551,65 @@ a.board__item:hover {
   margin-top: 0.4rem;
   color: var(--muted);
 }
+
+
+/* Notifications */
+.nav__badge {
+  display: inline-block;
+  min-width: 1.4rem;
+  margin-left: 0.5rem;
+  padding: 0 0.4rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+  line-height: 1.4rem;
+  text-align: center;
+  color: var(--ink);
+  background: #fff;
+  border-radius: 999px;
+}
+.tabs button.tabs__on,
+.tabs button[aria-pressed='true'] {
+  background: var(--surface);
+  border-color: var(--rule-strong);
+}
+.notices {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  border-radius: var(--r-md);
+  overflow: hidden;
+}
+.notice {
+  border-bottom: 1px solid var(--rule);
+}
+.notice:last-child {
+  border-bottom: 0;
+}
+.notice a {
+  display: block;
+  padding: 0.85rem 1.1rem 0.85rem 1.3rem;
+  color: var(--ink-2);
+  text-decoration: none;
+  border-left: 6px solid transparent;
+}
+.notice a:hover {
+  background: var(--blue-tint);
+}
+.notice--unread a {
+  color: var(--ink);
+  font-weight: 700;
+  border-left-color: var(--blue);
+}
+.notice__text {
+  display: block;
+  overflow-wrap: anywhere;
+}
+.notice__time {
+  display: block;
+  margin-top: 0.15rem;
+  font-size: 0.9rem;
+  font-weight: 400;
+  color: var(--muted);
+}
