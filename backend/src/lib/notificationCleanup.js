@@ -10,6 +10,13 @@ export async function deleteOldNotifications(now = new Date()){
     return count;
 }
 
+// Finished or abandoned password reset requests are not kept for long either.
+export async function deleteOldPasswordResets(now = new Date()) {
+  const cutoff = new Date(now.getTime() - 7 * DAY_MS);
+  const { count } = await prisma.passwordReset.deleteMany({ where: { createdAt: { lt: cutoff } } });
+  return count;
+}
+
 export function startNotificationCleanup(){
     const run = () => deleteOldNotifications().catch((err) => console.error(`Notification cleanup failed: ${err.message}`));
     run();
