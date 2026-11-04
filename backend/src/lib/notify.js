@@ -39,6 +39,15 @@ async function save(ticketId, actorId, items) {
   if (data.length > 0) await prisma.notification.createMany({ data });
 }
 
+// password reset
+export function notifyPasswordResetRequested({ user }) {
+  return safely('password reset requested', async () => {
+    const adminIds = await activeAdminIds();
+    const message = `${user.name} (${user.department}) forgot their password. Open Users to give them a reset code.`;
+    await save(null, user.id, adminIds.map((userId) => ({ userId, type: 'PASSWORD_RESET_REQUEST', message })));
+  });
+}
+
 // ticket
 export function notifyTicketCreated({ ticket, actor }) {
   return safely('ticket created', async () => {
