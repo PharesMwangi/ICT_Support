@@ -4,6 +4,7 @@ import { loadSlaMinutes } from "../lib/sla.js";
 import { detectFileType, safeFileName } from "../lib/fileType.js";
 import { buildTicketUpdate } from "../lib/ticketRules.js";
 import { withSla } from "../lib/ticketFormat.js";
+import { notifyComment, notifyTicketCreated, notifyTicketUpdated } from "../lib/notify.js";
 import { listTicketsQuery } from "../validators/ticketSchemas.js";
 
 const isAdminUser = (user) => user.role === 'ADMIN';
@@ -96,6 +97,7 @@ export async function createTicket(req, res) {
     select: detailSelect(isAdminUser(req.user)),
   });
 
+  await notifyTicketCreated({ ticket, actor: req.user });
   res.status(201).json({ ticket: withSla(ticket) });
 }
 
@@ -183,36 +185,46 @@ async function runUpdate(id, body, user) {
   const { data, events } = buildTicketUpdate(ticket, body, { assignee, slaMinutes, now: new Date() });
 
   if (events.length === 0) {
-    return prisma.ticket.findUnique({ where: { id }, select: detailSelect(admin) });
+    return {
+      ticket: await prisma.ticket.findUnique({ where: { id }, select: detailSelect(admin) }),
+      events,
+    };
   }
 
-  // 2. Open the transaction ONLY for the fast write operations
-  return prisma.$transaction(async (tx) => {
-    return tx.ticket.update({
+  await prisma.$transaction(async (tx) => {
+    await tx.ticket.update({
       where: { id },
       data: { ...data, events: { create: events.map((e) => ({ ...e, actorId: user.id })) } },
       select: { id: true }
     });
   });
 
-  // 3. Fetch the heavy details independently AFTER the transaction is safely closed
-  return prisma.ticket.findUnique({
+  const updatedTicket = await prisma.ticket.findUnique({
     where: { id },
     select: detailSelect(admin),
   });
+  return { ticket: updatedTicket, events };
 }
 
 
 // ---- PATCH /api/tickets/:id  admins only ----
 // body: { priority?, assigneeId?, status? }
 export async function updateTicket(req, res) {
-  const ticket = await runUpdate(req.params.id, req.body, req.user);
+  const { ticket, events } = await runUpdate(req.params.id, req.body, req.user);
+  const assigned = events.some((event) => event.type === 'ASSIGNED');
+  await notifyTicketUpdated({
+    ticket,
+    events,
+    actor: req.user,
+    newAssigneeId: assigned ? ticket.assignee?.id : undefined,
+  });
   res.json({ ticket: withSla(ticket) });
 }
 
 // ---- POST /api/tickets/:id/reopen  - the requester, or an admin----
 export async function reopenTicket(req, res) {
-  const ticket = await runUpdate(req.params.id, { status: 'REOPENED' }, req.user);
+  const { ticket, events } = await runUpdate(req.params.id, { status: 'REOPENED' }, req.user);
+  await notifyTicketUpdated({ ticket, events, actor: req.user });
   res.json({ ticket: withSla(ticket) });
 }
 
@@ -223,7 +235,13 @@ export async function addComment(req, res) {
 
   const ticket = await prisma.ticket.findUnique({
     where: { id: req.params.id },
-    select: { id: true, requesterId: true },
+    select: {
+      id: true,
+      number: true,
+      summary: true,
+      requesterId: true,
+      assigneeId: true,
+    },
   });
   if (!ticket || (!admin && ticket.requesterId !== req.user.id)) throw new HttpError(404, 'Ticket not found');
 
@@ -243,6 +261,7 @@ export async function addComment(req, res) {
     },
   });
 
+  await notifyComment({ ticket, comment, actor: req.user });
   res.status(201).json({ comment });
 }
 
@@ -268,6 +287,8 @@ export async function downloadAttachment(req, res) {
   ) {
     throw new HttpError(404, 'Attachment not found');
   }
+
+  res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
 
   res.type(attachment.mimeType);
   res.attachment(attachment.fileName); // always a download, never shown as a page
