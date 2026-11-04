@@ -14,6 +14,7 @@ import metaRoutes from './routes/metaRoutes.js';
 import kbRoutes from './routes/kbRoutes.js';
 import ticketRoutes from './routes/ticketRoutes.js';
 import reportRoutes from './routes/reportRoutes.js';
+import passwordResetRoutes from './routes/passwordResetRoutes.js';
 import  notificationRoutes from './routes/notificationRoutes.js';
 
 export const app = express();
@@ -44,6 +45,7 @@ app.use('/api/kb', kbRoutes);
 app.use('/api/tickets', ticketRoutes);
 app.use('/api/reports', reportRoutes);
 app.use('/api/notifications', notificationRoutes);
+app.use('/api/password-resets', passwordResetRoutes);
 
 app.use(notFound);
 app.use(errorHandler);
