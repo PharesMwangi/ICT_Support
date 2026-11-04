@@ -64,6 +64,7 @@ model User {
   attachments      Attachment[]
   articles         KbArticle[]
   notifications    Notification[]
+  passwordResets   PasswordReset[] 
 
   @@index([role])
   @@index([department])
