@@ -84,7 +84,7 @@ export default function Notifications(){
               <ul className="notices">
                 {data.notifications.map((n) => (
                   <li key={n.id} className={n.isRead ? 'notice' : 'notice notice--unread'}>
-                    <Link to={`/tickets/${n.ticketId}`} onClick={() => open(n)}>
+                    <Link to={n.ticketId ? `/tickets/${n.ticketId}` : '/users'} onClick={() => open(n)}>
                       {!n.isRead && <span className="sr-only">Unread: </span>}
                       <span className="notice__text">{n.message}</span>
                       <span className="notice__time">{formatDateTime(n.createdAt)}</span>
