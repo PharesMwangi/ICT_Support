@@ -7,6 +7,7 @@ import { useDocumentTitle } from '../hooks/useDocumentTitle.js';
 import { Alert, Field, PageHeader, Spinner } from '../components/ui.jsx';
 import EmptyState from '../components/EmptyState.jsx';
 import { roleLabel } from '../lib/labels.js';
+import { formatDateTime } from '../lib/format.js';
 
 const ADMIN_DEPARTMENT = 'ICT';
 
@@ -20,6 +21,8 @@ export default function Users(){
     const [actionError, setActionError] = useState(null);
     const [notice, setNotice] = useState(null);
     const [busyId, setBusyId] = useState(null);
+    const resets = useAsync(() => api.passwordResets(), []);
+    const [issued, setIssued] = useState(null); 
 
     async function run(u, label, confirmText, fn) {
         if (!window.confirm(confirmText)) return;
@@ -37,8 +40,40 @@ export default function Users(){
         }
     }
 
+    // Gives the person a one-time code.
+    async function giveCode(key, call) {
+      setBusyId(key);
+      setActionError(null);
+      setNotice(null);
+      try {
+        setIssued(await call());
+        await resets.reload();
+      } catch (e) { 
+        setActionError(e);
+      } finally {
+        setBusyId(null);
+      }
+    }
+    const codeFromRequest = (r) => giveCode(r.id, () => api.issueResetCode(r.id));
+    const codeForUser = (u) => {
+      if (!window.confirm(`Do you want to create a password reset code for ${u.name}? Only do this after you are sure it is really them.`)) return;
+      giveCode(u.id, () => api.startUserReset(u.id));
+    };
+    async function dismiss(r) {
+      setBusyId(r.id);
+      setActionError(null);
+      try {
+        await api.dismissReset(r.id);
+        await resets.reload();
+        } catch (e) {
+          setActionError(e);
+        } finally {
+          setBusyId(null);
+        }
+    }
+
     const makeAdmin = (u) =>
-        run(u, 'Made ICT admin', `Make ${u.name} an ICT admin? They will be able to manage all tickets, write articles, see reports and manage users.`, () => api.setRole(u.id, 'ADMIN'));
+      run(u, 'Made ICT admin', `Make ${u.name} an ICT admin? They will be able to manage all tickets, write articles, see reports and manage users.`, () => api.setRole(u.id, 'ADMIN'));
     const makeStaff = (u) => run(u, 'Changed to staff', `Remove admin access from ${u.name}?`, () => api.setRole(u.id, 'STAFF'));
     const deactivate = (u) => run(u, 'Deactivated', `Deactivate ${u.name}? They will not be able to log in.`, () => api.setActive(u.id, false));
     const activate = (u) => run(u, 'Reactivated', `Reactivate ${u.name}?`, () => api.setActive(u.id, true));
@@ -70,6 +105,46 @@ export default function Users(){
                 </Field>
             </div>
             <Alert error={error ?? actionError} />
+            {issued && (
+              <div className="code-box" role="status">
+                <strong>Reset code for {issued.user.name}</strong>
+                <span className="code-box__code">{issued.code}</span>
+                <p>
+                  Provide {issued.user.name} with this code. It expires at {formatDateTime(issued.expiresAt)}.
+                  
+                </p>
+                <button type="button" className="btn btn--quiet btn--small" onClick={() => setIssued(null)}>
+                  Done, hide the code
+                </button>
+              </div>
+          )}
+            {resets.data?.resets.length > 0 && (
+              <section aria-labelledby="reset-h" style={{ marginBottom: '1.5rem' }}>
+                <h2 id="reset-h" className="section__title">
+                    Password reset requests
+                </h2>
+                <ul className="requests">
+                  {resets.data.resets.map((r) => (
+                    <li key={r.id}>
+                      <span>
+                        <strong>{r.user.name}</strong> ({r.user.department})
+                        <span className="requests__meta" style={{ display: 'block' }}>
+                          {r.status === 'PENDING' ? `Asked ${formatDateTime(r.createdAt)}` : `Code given, expires ${formatDateTime(r.expiresAt)}`}
+                        </span>
+                      </span>
+                      <span className="table__actions">
+                        <button type="button" className="btn btn--small" disabled={busyId === r.id} onClick={() => codeFromRequest(r)}>
+                          {r.status === 'PENDING' ? 'Create code' : 'Create a new code'}
+                        </button>
+                        <button type="button" className="btn btn--quiet btn--small" disabled={busyId === r.id} onClick={() => dismiss(r)}>
+                          Dismiss
+                        </button>
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            )}
             {notice && <Alert kind="success">{notice}</Alert>}
             {loading && !data ? (
                 <Spinner />
@@ -118,6 +193,11 @@ export default function Users(){
                                       ) : (
                                         <button type="button" className="btn btn--quiet btn--small" disabled={busy} onClick={() => makeStaff(u)}>
                                           Make staff
+                                        </button>
+                                      )}
+                                      {u.isActive && (
+                                        <button type="button" className="btn btn--quiet btn--small" disabled={busy || busyId === u.id} onClick={() => codeForUser(u)}>
+                                          Reset password
                                         </button>
                                       )}
                                       {u.isActive ? (
