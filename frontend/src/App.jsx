@@ -3,6 +3,8 @@ import { PublicOnly, RequireAdmin, RequireAuth } from './auth/guards.jsx';
 import Layout from './components/Layout.jsx';
 import Login from './pages/Login.jsx';
 import Signup from './pages/Signup.jsx';
+import ForgotPassword from './pages/ForgotPassword.jsx';
+import ResetPassword from './pages/ResetPassword.jsx';
 import Dashboard from './pages/Dashboard.jsx';
 import Tickets from './pages/Tickets.jsx';
 import NewTicket from './pages/NewTicket.jsx';
@@ -21,6 +23,8 @@ export default function App() {
       <Route element={<PublicOnly />}>
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
       </Route>
 
       <Route element={<RequireAuth />}>
