@@ -6,7 +6,14 @@ export const api = {
   me: () => request('/auth/me'),
   login: (email, password) => request('/auth/login', { method: 'POST', body: { email, password } }),
   signup: (data) => request('/auth/signup', { method: 'POST', body: data }),
+  forgotPassword: (email) => request('/auth/forgot-password', { method: 'POST', body: { email } }),
+    resetPassword: (values) => request('/auth/reset-password', { method: 'POST', body: values }),
   logout: () => request('/auth/logout', { method: 'POST' }),
+
+  passwordResets: () => request('/password-resets'),
+  issueResetCode: (id) => request(`/password-resets/${id}/issue-code`, { method: 'POST' }),
+  dismissReset: (id) => request(`/password-resets/${id}/dismiss`, { method: 'POST' }),
+  startUserReset: (userId) => request(`/users/${userId}/password-reset`, { method: 'POST' }),
 
   users: (query) => request('/users', { query }),
   setRole: (id, role) => request(`/users/${id}/role`, { method: 'PATCH', body: { role } }),
