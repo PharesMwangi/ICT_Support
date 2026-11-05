@@ -30,7 +30,7 @@ if(env.NODE_ENV !== 'test') app.use(morgan(env.NODE_ENV === 'production' ? 'comb
 //slow down guessing
 const authLimiter = rateLimit({
     windowMs: 5 * 60 * 1000,
-    limit: 5,
+    limit: 15,
     standardHeaders: 'draft-7',
     legacyHeaders: false,
     skip: () => env.NODE_ENV === 'test',
