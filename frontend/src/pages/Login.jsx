@@ -36,6 +36,7 @@ export default function Login(){
             Use your work email address.
         </p>
         <SessionEndedNotice />
+        {location.state?.passwordChanged && <Alert kind="success">Your password has been changed. Log in with your new password.</Alert>}
         <Alert error={error} />
         <form onSubmit={onSubmit} noValidate>
             <Field label="Email">
@@ -46,6 +47,9 @@ export default function Login(){
                     <input {...p} type="password" autoComplete="current-password" value={password} onChange={(e) => setPassword(e.target.value)} required />
                 )}
             </Field>
+            <p style={{ margin: '-0.4rem 0 1.15rem' }}>
+                <Link to="/forgot-password">Forgot your password?</Link>
+            </p>
             <button className="btn btn--block" type="submit" disabled={busy}>
                 {busy ? 'Logging in…' : 'Log in'}
             </button>
