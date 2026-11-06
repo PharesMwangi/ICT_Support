@@ -36,7 +36,7 @@ export const api = {
 
   notifications: (query) => request('/notifications', { query}),
   unreadCount: () => request('/notifications/unread-count'),
-  markRead: (id) => request(`notifications/${id}/read`, {method: 'POST'}),
+  markRead: (id) => request(`/notifications/${id}/read`, {method: 'POST'}),
   markAllRead: () => request('/notifications/read-all', {method: 'POST'}),
 
   summary: (query) => request('/reports/summary', { query }),
