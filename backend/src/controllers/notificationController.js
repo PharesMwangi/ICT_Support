@@ -1,5 +1,5 @@
 import { prisma } from '../lib/prisma.js';
-import { HttpError } from '../lib/httpError.js';
+import { HttpError } from '../lib/HttpError.js';
 import { listNotificationsQuery } from '../validators/notificationSchemas.js';
 
 const select = { id: true, type: true, message: true, isRead: true, createdAt: true, ticketId: true };
