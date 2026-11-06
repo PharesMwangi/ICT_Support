@@ -31,7 +31,7 @@ export default function ForgotPassword() {
             <AuthShell>
               <h1>Ask the ICT team</h1>
               <p className="page-head__sub" style={{ marginBottom: '1.25rem' }}>
-                  If {email} has an active account, the ICT team has been told.
+                  If {email} has an active account, the ICT team is working on it.
               </p>
               <ol className="steps">
                   <li>Contact the ICT team.</li>

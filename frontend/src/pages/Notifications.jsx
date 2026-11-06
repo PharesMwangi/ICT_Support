@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {Link} from 'react-router-dom';
 import { api } from '../api/endpoints.js';
 import { useAsync } from '../hooks/useAsync.js';
@@ -13,7 +13,7 @@ const LIMIT = 20;
 
 export default function Notifications(){
     useDocumentTitle('Notifications');
-    const { refresh } = useNotifications();
+    const { refresh, decrement } = useNotifications();
     const [onlyUnread, setOnlyUnread] = useState(false);
     const [page, setPage] = useState(1);
     const { data, error, loading, reload } = useAsync(
@@ -22,9 +22,14 @@ export default function Notifications(){
     );
     const [actionError, setActionError] = useState(null);
 
+    const [openedIds, setOpenedIds] = useState(() => new Set());
+    useEffect(() => setOpenedIds(new Set()), [data]);
+
     // Clicking a notification opens the ticket and marks it read in the background.
     function open(n) {
-        if (n.isRead) return;
+        if (n.isRead || openedIds.has(n.id)) return;
+        setOpenedIds((prev) => new Set(prev).add(n.id));
+        decrement();
         api
           .markRead(n.id)
           .then(refresh)
@@ -82,15 +87,18 @@ export default function Notifications(){
           ) : data?.notifications.length ? (
             <>
               <ul className="notices">
-                {data.notifications.map((n) => (
-                  <li key={n.id} className={n.isRead ? 'notice' : 'notice notice--unread'}>
-                    <Link to={n.ticketId ? `/tickets/${n.ticketId}` : '/users'} onClick={() => open(n)}>
-                      {!n.isRead && <span className="sr-only">Unread: </span>}
-                      <span className="notice__text">{n.message}</span>
-                      <span className="notice__time">{formatDateTime(n.createdAt)}</span>
-                    </Link>
-                  </li>
-                ))}
+                {data.notifications.map((raw) => {
+                  const n = openedIds.has(raw.id) ? { ...raw, isRead: true } : raw;
+                    return (
+                      <li key={n.id} className={n.isRead ? 'notice' : 'notice notice--unread'}>
+                        <Link to={n.ticketId ? `/tickets/${n.ticketId}` : '/users'} onClick={() => open(raw)}>
+                          {!n.isRead && <span className="sr-only">Unread: </span>}
+                          <span className="notice__text">{n.message}</span>
+                          <span className="notice__time">{formatDateTime(n.createdAt)}</span>
+                        </Link>
+                      </li>
+                    );
+                  })}
               </ul>
               <Pagination page={data.page} limit={data.limit} total={data.total} onPage={setPage} />
             </>

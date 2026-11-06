@@ -18,6 +18,8 @@ export function NotificationsProvider({ children }) {
     }
   }, []);
 
+  const decrement = useCallback(() => setCount((c) => Math.max(0, c - 1)), []);
+  
   useEffect(() => {
     refresh();
     const tick = () => {
@@ -31,7 +33,7 @@ export function NotificationsProvider({ children }) {
     };
   }, [refresh]);
 
-  const value = useMemo(() => ({ count, refresh, setCount }), [count, refresh]);
+  const value = useMemo(() => ({ count, refresh, decrement }), [count, refresh, decrement]);
   return <NotificationsContext.Provider value={value}>{children}</NotificationsContext.Provider>;
 }
 
